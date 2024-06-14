@@ -1,5 +1,4 @@
-from loader import bot
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 
 def gen_markup() -> ReplyKeyboardMarkup:
