@@ -1,8 +1,7 @@
-import requests
 from loader import bot
-from config_data.config import API_KEY
 from telebot.types import Message
 from states.information import UserInfoState
+from api import movie_by_rating_api
 
 
 @bot.message_handler(func=lambda message: message.text == 'Поиск по названию')
@@ -16,48 +15,36 @@ def get_movie_name(message: Message) -> None:
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
         data['movie_name'] = message.text
 
-    bot.send_message(message.from_user.id, 'Отлично, теперь введите жанр фильма:')
-    bot.set_state(message.from_user.id, UserInfoState.genres, message.chat.id)
-    bot.register_next_step_handler(message, get_movie_genre)
+    bot.send_message(message.from_user.id, 'Введите количество выводимых вариантов:')
+    bot.set_state(message.from_user.id, UserInfoState.limit, message.chat.id)
 
 
-def get_movie_genre(message: Message) -> None:
-    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-        data['genres'] = message.text
+@bot.message_handler(state=UserInfoState.limit)
+def get_limit(message: Message) -> None:
+    try:
+        limit = int(message.text)
+        with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+            data['limit'] = limit
 
-    bot.send_message(message.from_user.id, 'И последнее, введите количество выводимых вариантов:')
+        movie_data = movie_by_rating_api.fetch_movies_by_rating(data['min_rating'], data['max_rating'], data['limit'])
 
+        if 'docs' in movie_data and movie_data['docs']:
+            movie = movie_data['docs'][0]
+            poster_url = movie.get('poster', {}).get('previewUrl', 'Постер не доступен')
+            bot.send_message(message.from_user.id,
+                             f"НАЗВАНИЕ: {movie['name']}\n"
+                             f"РЕЙТИНГ: {movie['rating']['kp']}\n"
+                             f"ГОД: {movie['year']}\n"
+                             f"ЖАНР: {movie['genres'][0]['name']}\n"
+                             f"ВОЗРАСТНОЙ РЕЙТИНГ: {movie['ageRating']}\n"
+                             f"ОПИСАНИЕ: {movie['description']}\n"
+                             f"ПОСТЕР: {poster_url}"
+                             )
+        else:
+            bot.send_message(message.from_user.id, 'Фильмы не найдены.')
 
-@bot.message_handler(state=UserInfoState.genres)
-def get_movie_limit(message: Message) -> None:
-    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
-        try:
-            data['limit'] = int(message.text)
+    except ValueError:
 
-            base_url = 'https://api.kinopoisk.dev/v1.4/movie/search'
-            params = {
-                'page': 1,
-                'limit': data['limit'],
-                'query': data['movie_name']
-            }
-            headers = {'X-API-KEY': API_KEY}
-            response = requests.get(base_url, headers=headers, params=params)
-            response_data = response.json()
-
-            if 'docs' in response_data and response_data['docs']:
-                movie_data = response_data['docs'][0]
-                bot.send_message(message.from_user.id,
-                                 f"НАЗВАНИЕ: {movie_data['name']}\n"
-                                 f"РЕЙТИНГ: {movie_data['rating']['kp']}\n"
-                                 f"ГОД: {movie_data['year']}\n"
-                                 f"ЖАНР: {movie_data['genres'][0]['name']}\n"
-                                 f"ВОЗРАСТНОЙ РЕЙТИНГ: {movie_data['ageRating']}\n"
-                                 f"ОПИСАНИЕ: {movie_data['description']}\n"
-                                 f"ПОСТЕР: {movie_data['poster']['previewUrl']}"
-                                 )
-            else:
-                bot.send_message(message.from_user.id, 'Фильмы не найдены.')
-
-        except ValueError:
-            bot.send_message(message.from_user.id, 'Количество выводимых вариантов должно быть числом!')
-
+        bot.send_message(message.from_user.id, 'Пожалуйста, введите число.')
+    # Сброс состояния пользователя
+    bot.delete_state(message.from_user.id, message.chat.id)
