@@ -1,7 +1,7 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 
-def gen_markup() -> ReplyKeyboardMarkup:
+def gen_markup():
     # Функция , создание кнопок.
     btn_1 = KeyboardButton(text='Поиск по названию')
     btn_2 = KeyboardButton(text='Поиск по рейтингу')
