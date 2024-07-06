@@ -7,4 +7,5 @@ class UserInfoState(StatesGroup):
     limit = State()
     min_rating = State()
     max_rating = State()
+    movie_budget = State()
 

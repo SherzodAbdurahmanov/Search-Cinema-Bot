@@ -26,7 +26,7 @@ def get_limit(message: Message) -> None:
         with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
             data['limit'] = limit
 
-        movies_data = movie_search_api.fetch_movies_by_title(data['movie_name'], data['limit'])
+            movies_data = movie_search_api.fetch_movies_by_title(data['movie_name'], data['limit'])
 
         if 'docs' in movies_data and movies_data['docs']:
             for movie in movies_data['docs']:
