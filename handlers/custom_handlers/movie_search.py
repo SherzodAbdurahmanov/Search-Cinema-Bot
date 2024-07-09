@@ -1,5 +1,5 @@
 from loader import bot
-from telebot.types import Message, InlineKeyboardMarkup , InlineKeyboardButton
+from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from states.information import UserInfoState
 from api import movie_search_api
 

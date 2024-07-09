@@ -8,8 +8,7 @@ def fetch_movies_by_budget(max_budget: int, limit: int) -> dict:
     params = {
         'page': 1,
         'limit': limit,
-        'budgetLte': max_budget,
-        'sort': 'budget'
+        'budget.value': max_budget
     }
     headers = {'X-API-KEY': API_KEY}
     response = requests.get(base_url, headers=headers, params=params)
