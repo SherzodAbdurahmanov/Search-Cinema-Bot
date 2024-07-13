@@ -3,6 +3,12 @@ from config_data.config import API_KEY
 
 
 def fetch_movies_by_title(title: str, limit: int) -> dict:
+    """
+        Функция для запроса фильмов по названию ниже заданного значения
+        :param title: str
+        :param limit: int
+        :return: dict
+    """
     base_url = 'https://api.kinopoisk.dev/v1.4/movie/search?'
     params = {
         'page': 1,

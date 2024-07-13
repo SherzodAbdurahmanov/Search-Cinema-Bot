@@ -1,11 +1,15 @@
 from loader import bot
 from database.database import get_user_message_history
-from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from telebot.types import Message
 
 
 @bot.message_handler(func=lambda message: message.text == 'История запросов')
-# """ Функция ,для просмотра истории запросов и поиска фильма/сериала"""
 def history(message: Message) -> None:
+    """
+    Функция ,для просмотра истории запросов и поиска фильма/сериала
+    :param message: str
+    :return:
+    """
     user_id = message.from_user.id
 
     # Retrieve message history

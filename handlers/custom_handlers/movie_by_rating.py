@@ -6,12 +6,20 @@ from api import movie_by_rating_api
 
 @bot.message_handler(func=lambda message: message.text == 'Поиск по рейтингу')
 def rating_search(message: Message) -> None:
+    """
+    Обработчик команды  "Поиск по рейтингу"
+    :param message: str
+    """
     bot.set_state(message.from_user.id, UserInfoState.min_rating, message.chat.id)
     bot.send_message(message.from_user.id, 'Введите минимальный рейтинг (0.0-10.0):')
 
 
 @bot.message_handler(state=UserInfoState.min_rating)
 def get_min_rating(message: Message) -> None:
+    """
+    Обработчик состояния получения минимального рейтинга фильма.
+    :param message: str
+    """
     try:
         min_rating = float(message.text)
         if 0.0 <= min_rating <= 10.0:
@@ -27,6 +35,10 @@ def get_min_rating(message: Message) -> None:
 
 @bot.message_handler(state=UserInfoState.max_rating)
 def get_max_rating(message: Message) -> None:
+    """
+    Обработчик состояния получения максимального рейтинга фильма.
+    :param message: str
+    """
     try:
         max_rating = float(message.text)
         if 0.0 <= max_rating <= 10.0:
@@ -42,6 +54,10 @@ def get_max_rating(message: Message) -> None:
 
 @bot.message_handler(state=UserInfoState.limit_by_rating)
 def get_limit(message: Message) -> None:
+    """
+    Обработчик состояния получения количества выводимых вариантов
+    :param message: str
+    """
     try:
         limit = int(message.text)
         with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
