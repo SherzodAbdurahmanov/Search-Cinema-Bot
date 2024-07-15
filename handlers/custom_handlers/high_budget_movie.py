@@ -4,16 +4,24 @@ from states.information import UserInfoState
 from api import high_budget_api
 
 
-# Обработчик команды "Поиск с высоким бюджетом"
+
 @bot.message_handler(func=lambda message: message.text == 'С высоким бюджетом')
 def high_budget_search(message: Message) -> None:
+    """
+    Обработчик команды поиск "С высоким бюджетом"
+    :param message: str
+    """
     bot.set_state(message.from_user.id, UserInfoState.movie_budget_high, message.chat.id)
     bot.send_message(message.from_user.id, 'Введите минимальный бюджет фильма в долларах США (например, 50000000):')
 
 
-# Обработчик состояния получения бюджета фильма
+
 @bot.message_handler(state=UserInfoState.movie_budget_high)
 def get_high_movie_budget(message: Message) -> None:
+    """
+    Обработчик состояния получения бюджета фильма.
+    :param message: str
+    """
     try:
         budget = int(message.text)
         with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
@@ -25,9 +33,13 @@ def get_high_movie_budget(message: Message) -> None:
         bot.send_message(message.from_user.id, 'Пожалуйста, введите число.')
 
 
-# Обработчик состояния получения количества выводимых вариантов
 @bot.message_handler(state=UserInfoState.limit_high_budget)
 def get_high_limit(message: Message) -> None:
+    """
+    Обработчик состояния получения количества выводимых вариантов.
+    :param message: str
+    """
+
     try:
         limit = int(message.text)
         with bot.retrieve_data(message.from_user.id, message.chat.id) as data:

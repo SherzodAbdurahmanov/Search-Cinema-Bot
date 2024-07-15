@@ -3,6 +3,13 @@ from config_data.config import API_KEY
 
 
 def fetch_movies_by_rating(min_rating: float, max_rating: float, limit: int) -> dict:
+    """
+        Функция для запроса фильмов по рейтингу ниже заданного значения
+        :param max_rating: float
+        :param min_rating: float
+        :param limit: int
+        :return: dict
+    """
     base_url = 'https://api.kinopoisk.dev/v1.4/movie'
     params = {
         'page': 1,
