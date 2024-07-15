@@ -1,38 +1,18 @@
-# database.py
-import sqlite3
+from peewee import SqliteDatabase, Model, IntegerField, CharField, DateTimeField
+import datetime
+
+db = SqliteDatabase('movie_bot.db')
 
 
-def get_db_connection():
-    conn = sqlite3.connect('database/messages.db')
-    return conn
+class BaseModel(Model):
+    class Meta:
+        database = db
 
 
-def store_user_message(user_id, message_text):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute('''
-        INSERT INTO user_messages (user_id, message_text)
-        VALUES (?, ?)
-    ''', (user_id, message_text))
-
-    conn.commit()
-    conn.close()
+class SearchHistory(BaseModel):
+    user_id = IntegerField()
+    query_type = CharField()  # Например, 'title', 'rating', 'low_budget', 'high_budget'
+    query_value = CharField()  # Сохранение значений запроса
+    timestamp = DateTimeField(default=datetime.datetime.now)
 
 
-def get_user_message_history(user_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute('''
-        SELECT message_text, timestamp
-        FROM user_messages
-        WHERE user_id = ?
-        ORDER BY timestamp DESC
-        LIMIT 10
-    ''', (user_id,))
-
-    messages = cursor.fetchall()
-    conn.close()
-
-    return messages
