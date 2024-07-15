@@ -1,5 +1,5 @@
 from loader import bot
-from telebot.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from telebot.types import Message
 from states.information import UserInfoState
 from api import low_budget_api
 
