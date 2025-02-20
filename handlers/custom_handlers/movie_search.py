@@ -1,6 +1,6 @@
 from database.database import SearchHistory
 from loader import bot
-from telebot.types import Message
+from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from states.information import UserInfoState
 from api import movie_search_api
 
@@ -51,14 +51,18 @@ def get_limit(message: Message) -> None:
         if 'docs' in movies_data and movies_data['docs']:
             for movie in movies_data['docs']:
                 poster_url = movie.get('poster', {}).get('previewUrl', None)
+                watch_button = InlineKeyboardMarkup()
+                watch_button.add(
+                    InlineKeyboardButton("Смотреть", url=f"https://www.kinopoisk.ru/film/{movie['id']}/"))
                 movie_info = (f"НАЗВАНИЕ: {movie['name']}\n"
                               f"РЕЙТИНГ: {movie['rating']['kp']}\n"
                               f"ГОД: {movie['year']}\n"
                               f"ЖАНР: {movie['genres'][0]['name']}\n"
                               f"ВОЗРАСТНОЙ РЕЙТИНГ: {movie['ageRating']}\n"
                               f"ОПИСАНИЕ: {movie['description']}\n")
+
                 if poster_url:
-                    bot.send_photo(message.from_user.id, poster_url, caption=movie_info)
+                    bot.send_photo(message.from_user.id, poster_url, caption=movie_info, reply_markup=watch_button)
                 else:
                     bot.send_message(message.from_user.id, movie_info)
         else:
